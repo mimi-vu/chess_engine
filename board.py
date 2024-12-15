@@ -146,7 +146,7 @@ def is_valid_move(start, end, piece, board):
         return check_diagonal(start, end)
     elif piece.endswith('q'):
         return check_diagonal(start, end) or check_horizontal(start, end) or check_vertical(start, end)
-    elif piece.endswith('k'):
+    elif piece.endswith('r'):
         return check_horizontal(start, end) or check_vertical(start, end)
     elif piece.endswith('n'):
         if abs(end_row - start_row) == 2 and abs(end_col - start_col) == 1:

@@ -58,45 +58,101 @@ def get_square_under_mouse():
     col = mouse_x // SQUARE_SIZE
     return row, col
 
+def check_diagonal(start, end):
+    start_row, start_col = start
+    end_row, end_col = end
+    if abs(end_row - start_row) == abs(end_col - start_col) and abs(end_row - start_row) != 0:
+        row_increment = 1
+        col_increment = 1
+        if start_row > end_row:
+            row_increment = -1
+        if start_col > end_col:
+            col_increment = -1
+        while start_row > -1 and start_row < 8 and start_row != end_row and start_col > -1 and start_col < 8 and start_col != end_col:
+            start_row += row_increment
+            start_col += col_increment
+            if board[start_row][start_col] != '--':
+                break
+        if start_row == end_row and start_col == end_col:
+            return True
+    return False
+
+def check_horizontal(start, end):
+    start_row, start_col = start
+    end_row, end_col = end
+    
+    if end_row - start_row == 0:
+        col_increment = 1
+        if start_col > end_col:
+            col_increment = -1
+        while start_col > -1 and start_col < 8 and start_col != end_col:
+            start_col += col_increment
+            if board[start_row][start_col] != '--':
+                break
+        if start_col == end_col:
+            return True
+    return False
+
+def check_vertical(start, end):
+    start_row, start_col = start
+    end_row, end_col = end
+    if end_col - start_col == 0:
+        row_increment = 1
+        if start_row > end_row:
+            row_increment = -1
+        while start_row > -1 and start_row < 8 and start_row != end_row:
+            start_row += row_increment
+            if board[start_row][start_col] != '--':
+                break
+        if start_row == end_row:
+            return True
+    return False
+
 def is_valid_move(start, end, piece, board):
     if start == end:
         return False
     start_row, start_col = start
     end_row, end_col = end
-    print(start, end)
 
-    if 'w' in piece and 'w' in board[end_row][end_col]:
+    if piece.startswith('w') and board[end_row][end_col].startswith('w'):
         return False
-    if 'b' in piece and 'wb' != piece and 'b' in board[end_row][end_col] and 'wb' != board[end_row][end_col]:
+    if piece.startswith('b') and board[end_row][end_col].startswith('b'):
         return False
     
-    if 'p' in piece:
+    if piece.endswith('p'):
+        if abs(end_col - start_col) > 1:
+            return False
         if (start_row == 6 or start_row == 1) and abs(end_row - start_row) <= 2:
             return True
         elif abs(end_row - start_row) == 1:
             if (end_col - start_col) == 0:
-                if 'w' in board[end_row][end_col]:
+                if board[end_row][end_col].startswith('w'):
                     return False
-                if 'b' in board[end_row][end_col] and 'wb' != board[end_row][end_col]:
+                if board[end_row][end_col].startswith('b'):
                     return False
             if abs(end_col - start_col) == 1:
-                if 'w' in piece:
-                    return 'b' in board[end_row][end_col] and 'wb' != board[end_row][end_col]
-                if 'b' in piece and 'wb' != piece:
-                    return 'w' in board[end_row][end_col]
-            return True
-    elif 'k' in piece:
+                if piece.startswith('w'):
+                    return board[end_row][end_col].startswith('b')
+                if piece.startswith('b'):
+                    return board[end_row][end_col].startswith('w')
+            if piece.startswith('w') and (end_row - start_row) == -1:
+                return True
+            if piece.startswith('b') and (end_row - start_row) == 1:
+                return True
+    elif piece.endswith('k'):
         if abs(end_row - start_row) <= 1 and abs(end_col - start_col) <= 1:
             return True
-    elif 'b' in piece:
-        if abs(end_row - start_row) == abs(end_col - start_col) and abs(end_row - start_row) != 0:
+    elif piece.endswith('b'):
+        return check_diagonal(start, end)
+    elif piece.endswith('q'):
+        return check_diagonal(start, end) or check_horizontal(start, end) or check_vertical(start, end)
+    elif piece.endswith('k'):
+        return check_horizontal(start, end) or check_vertical(start, end)
+    elif piece.endswith('n'):
+        if abs(end_row - start_row) == 2 and abs(end_col - start_col) == 1:
             return True
-    elif 'q' in piece:
-        return False
-    elif 'r' in piece:
-        return False
-    elif 'n' in piece:
-        return False
+        if abs(end_row - start_row) == 1 and abs(end_col - start_col) == 2:
+            return True
     return False 
 
 piece_images = load_piece_images()

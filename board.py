@@ -96,6 +96,7 @@ def check_horizontal(start, end):
 def check_vertical(start, end):
     start_row, start_col = start
     end_row, end_col = end
+    
     if end_col - start_col == 0:
         row_increment = 1
         if start_row > end_row:

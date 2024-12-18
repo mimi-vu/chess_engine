@@ -1,5 +1,4 @@
 import pygame
-import chess 
 
 pygame.init()
 
@@ -55,7 +54,7 @@ def draw_board(selected_square=None):
 # Load the images to be used later
 def load_piece_images():
     piece_images = {}
-    pieces = ['bp', 'bpp', 'bn', 'bb', 'br', 'bru', 'bq', 'bk', 'bku', 'wp', 'wpp', 'wn', 'wb', 'wr', 'wru', 'wq', 'wk', 'wku']
+    pieces = ['bp', 'bpp', 'bn', 'bb', 'br', 'bru', 'bq', 'bk', 'bku', 'wp', 'wpe', 'wn', 'wb', 'wr', 'wru', 'wq', 'wk', 'wku']
     for piece in pieces:
         image = pygame.image.load(f"assets/{piece}.png")
         piece_images[piece] = pygame.transform.scale(image, (SQUARE_SIZE, SQUARE_SIZE))
@@ -313,7 +312,7 @@ while running:
 
     draw_board(selected_square=selected_piece)
     draw_pieces(board)
-    pygame.display.flip()
+    pygame.display.update()
 
 # Quit Pygame
 pygame.quit()

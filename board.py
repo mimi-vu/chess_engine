@@ -37,13 +37,16 @@ black_pieces_locations = [(7, 7), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6)
 
 # This determines whether pieces can attack through pieces no matter if its an enemy or a friendly
 phasing = False
+
+global pawn_move_2_spaces
 pawn_move_2_spaces = False # boolean
+global pawn_moved_2_spaces 
 pawn_moved_2_spaces = None # coordinates
 
 def check_enpassant(end):
     end_row, end_col = end
     pawn_row, pawn_col = pawn_moved_2_spaces; 
-    if abs(end_col - pawn_col) == 1 and end_row == pawn_row:
+    if end_col == pawn_col:
         return True
     return False
 
@@ -63,7 +66,7 @@ def draw_board(selected_square=None):
 # Load the images to be used later
 def load_piece_images():
     piece_images = {}
-    pieces = ['bp', 'bpp', 'bn', 'bb', 'br', 'bru', 'bq', 'bk', 'bku', 'wp', 'wpe', 'wn', 'wb', 'wr', 'wru', 'wq', 'wk', 'wku']
+    pieces = ['bp', 'bpe', 'bn', 'bb', 'br', 'bru', 'bq', 'bk', 'bku', 'wp', 'wpe', 'wn', 'wb', 'wr', 'wru', 'wq', 'wk', 'wku']
     for piece in pieces:
         image = pygame.image.load(f"assets/{piece}.png")
         piece_images[piece] = pygame.transform.scale(image, (SQUARE_SIZE, SQUARE_SIZE))
@@ -182,7 +185,9 @@ def is_valid_move(start, end, piece, board):
         return False
     
     # Move checking for pawns
-    if piece.endswith('p'):
+    if 'p' in piece:
+        global pawn_move_2_spaces
+        global pawn_moved_2_spaces
         # If the pawn is moving way too far to the side, don't allow it
         if abs(end_col - start_col) > 1:
             return False
@@ -190,6 +195,7 @@ def is_valid_move(start, end, piece, board):
         # This allows a pawn to move 2 spaces forward when it is at its starting rank
         if (start_row == 6 or start_row == 1) and abs(end_row - start_row) <= 2:
             # store enpassatable
+            pawn_move_2_spaces = True
             pawn_moved_2_spaces = (end_row, end_col)
             return True
         
@@ -206,6 +212,7 @@ def is_valid_move(start, end, piece, board):
                 if pawn_moved_2_spaces and check_enpassant(end):
                     pawn_row, pawn_col = pawn_moved_2_spaces
                     board[pawn_row][pawn_col] = '--'
+                    pawn_moved_2_spaces = None
                     return True
                 
                 if piece.startswith('w'):
@@ -294,14 +301,15 @@ while running:
             if selected_piece:
                 # Separates the variables 
                 start_row, start_col, piece = selected_piece
-
                 # Checks if that piece is a piece of the current players, then checks if the move is a valid move
                 if board[start_row][start_col].startswith(turn[0]) and is_valid_move((start_row, start_col), (row, col), piece, board):
-
                     if pawn_move_2_spaces:
                         piece = turn[0] + 'pe'
                         pawn_move_2_spaces = False
                     elif pawn_moved_2_spaces:
+                        pawn_row, pawn_col = pawn_moved_2_spaces
+                        pawn = board[pawn_row][pawn_col]
+                        board[pawn_row][pawn_col] = pawn[0] + pawn[1]
                         pawn_moved_2_spaces = None
                     # Sets the original spot to be empty
                     board[start_row][start_col] = "--"

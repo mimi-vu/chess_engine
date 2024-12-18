@@ -193,7 +193,7 @@ def is_valid_move(start, end, piece, board):
             return False
         
         # This allows a pawn to move 2 spaces forward when it is at its starting rank
-        if (start_row == 6 or start_row == 1) and abs(end_row - start_row) <= 2:
+        if (start_row == 6 or start_row == 1) and abs(end_row - start_row) == 2:
             # store enpassatable
             pawn_move_2_spaces = True
             pawn_moved_2_spaces = (end_row, end_col)
@@ -297,7 +297,6 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             row, col = get_square_under_mouse()
-
             if selected_piece:
                 # Separates the variables 
                 start_row, start_col, piece = selected_piece
